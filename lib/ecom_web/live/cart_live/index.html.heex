@@ -1,0 +1,42 @@
+<.header>
+  Listing Carts
+  <:actions>
+    <.link patch={~p"/carts/new"}>
+      <.button>New Cart</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="carts"
+  rows={@streams.carts}
+  row_click={fn {_id, cart} -> JS.navigate(~p"/carts/#{cart}") end}
+>
+  <:col :let={{_id, cart}} label="User"><%= cart.user %></:col>
+  <:col :let={{_id, cart}} label="Data"><%= cart.data %></:col>
+  <:action :let={{_id, cart}}>
+    <div class="sr-only">
+      <.link navigate={~p"/carts/#{cart}"}>Show</.link>
+    </div>
+    <.link patch={~p"/carts/#{cart}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, cart}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: cart.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="cart-modal" show on_cancel={JS.patch(~p"/carts")}>
+  <.live_component
+    module={EcomWeb.CartLive.FormComponent}
+    id={@cart.id || :new}
+    title={@page_title}
+    action={@live_action}
+    cart={@cart}
+    patch={~p"/carts"}
+  />
+</.modal>

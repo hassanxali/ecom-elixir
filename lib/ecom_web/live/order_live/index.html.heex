@@ -1,0 +1,36 @@
+<.header>
+  Listing Orders
+</.header>
+
+<.table id="orders" rows={@streams.orders} row_click={fn {_id, order} -> JS.navigate(~p"/orders/#{order}") end}
+  >
+  <:col :let={{_id, order}} label="User">
+    <%= order.user_id %>
+  </:col>
+  <:col :let={{_id, order}} label="Products">
+    <%= for product <- order.product_ids do %>
+      <%= product %>
+        <%= end %>
+  </:col>
+  <:col :let={{_id, order}} label="Price">
+    <%= order.total_price %>
+  </:col>
+  <:action :let={{_id, order}}>
+    <div class="sr-only">
+      <.link navigate={~p"/orders/#{order}"}>Show</.link>
+    </div>
+    <.link patch={~p"/orders/#{order}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, order}}>
+    <.link phx-click={JS.push("delete", value: %{id: order.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+      >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="order-modal" show on_cancel={JS.patch(~p"/orders")}>
+  <.live_component module={EcomWeb.OrderLive.FormComponent} id={@order.id || :new} title={@page_title}
+    action={@live_action} order={@order} patch={~p"/orders"} />
+</.modal>

@@ -1,0 +1,62 @@
+<header class="px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
+    <div class="flex items-center gap-4">
+      <a href="/">
+        <img src={~p"/images/logo.svg"} width="36" />
+      </a>
+      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+        v<%= Application.spec(:phoenix, :vsn) %>
+      </p>
+    </div>
+    <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
+      <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
+        @elixirphoenix
+      </a>
+      <a href="https://github.com/phoenixframework/phoenix" class="hover:text-zinc-700">
+        GitHub
+      </a>
+      <a href="https://hexdocs.pm/phoenix/overview.html" class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80">
+        Get Started <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<button class="text-gray-500 hover:text-gray-600 float-right" id="open-sidebar">
+  <img src="https://www.shutterstock.com/image-vector/retail-icon-template-600nw-1269477451.jpg" alt="Cart"
+    class="w-9 h-9 m-4">
+</button>
+
+<div class="h-screen flex overflow-hidden">
+  <main class="px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto">
+      <.flash_group flash={@flash} />
+      <%= @inner_content %>
+    </div>
+  </main>
+
+  <!-- Sidebar -->
+  <div
+    class="absolute bg-gray-100 text-black w-80 min-h-screen overflow-y-auto transition-transform transform translate-x-full ease-in-out duration-300 right-0"
+    id="sidebar" style="z-index: 10;">
+    <%= live_render(@socket, EcomWeb.SidebarLive, [id: "sb" , pid: self()]) %>
+
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const openSidebarButton = document.getElementById('open-sidebar');
+
+    openSidebarButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('translate-x-full');
+    });
+
+    // Close the sidebar when clicking outside of it
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+        sidebar.classList.add('translate-x-full');
+      }
+    });
+  </script>
+</div>
